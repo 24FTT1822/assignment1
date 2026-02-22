@@ -1,14 +1,48 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () { return view('home'); })->name('home');
-Route::get('/about', function () { return view('about'); })->name('about');
-Route::get('/contacts', function () { return view('contacts'); })->name('contacts');
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
 
-Route::get('/highlighted1', function () { return view('highlighted1'); })->name('highlighted1');
-Route::get('/highlighted2', function () { return view('highlighted2'); })->name('highlighted2');
-Route::get('/latest1', function () { return view('latest1'); })->name('latest1');
-Route::get('/latest2', function () { return view('latest2'); })->name('latest2');
-Route::get('/latest3', function () { return view('latest3'); })->name('latest3');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/contacts', function () {
+    return view('contacts');
+})->name('contacts');
+
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes (Login Required)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    Route::resource('posts', PostController::class);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes (Breeze)
+|--------------------------------------------------------------------------
+*/
+
+require __DIR__.'/auth.php';
